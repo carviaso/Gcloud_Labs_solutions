@@ -1,3 +1,10 @@
+#Set the PROJECT_ID variable to the current Google Cloud project
+export ZONE=$(gcloud config get-value compute/zone)
+
+#Set the PROJECT_ID variable to the current Google Cloud project
+export PROJECT_ID=$(gcloud config get-value project)
+export DEVSHELL_PROJECT_ID=$(gcloud config get-value project)
+
 gcloud compute --project=$DEVSHELL_PROJECT_ID firewall-rules create fw-allow-health-checks --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:80 --source-ranges=130.211.0.0/22,35.191.0.0/16 --target-tags=allow-health-checks
 
 

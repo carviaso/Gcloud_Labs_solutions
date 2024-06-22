@@ -60,6 +60,9 @@ fi
 
 export REGION="${ZONE%-*}"
 
+# Habilitar los servicios necesarios
+echo "Habilitando los servicios necesarios..."
+
 gcloud services enable \
   artifactregistry.googleapis.com \
   cloudfunctions.googleapis.com \
@@ -69,17 +72,30 @@ gcloud services enable \
   logging.googleapis.com \
   pubsub.googleapis.com
 
+if [ $? -ne 0 ]; then
+  echo "Hubo un error al habilitar los servicios necesarios."
+  exit 1
+else
+  echo "Servicios necesarios habilitados exitosamente."
+fi
 
 sleep 70
 
 
 PROJECT_NUMBER=$(gcloud projects describe $DEVSHELL_PROJECT_ID --format='value(projectNumber)')
 
-
+# Añadir el binding de la política de IAM
+echo "Añadiendo el binding de la política de IAM para Eventarc..."
 gcloud projects add-iam-policy-binding $DEVSHELL_PROJECT_ID \
     --member=serviceAccount:$PROJECT_NUMBER-compute@developer.gserviceaccount.com \
     --role=roles/eventarc.eventReceiver
 
+if [ $? -ne 0 ]; then
+  echo "Hubo un error al añadir el binding de la política de IAM."
+  exit 1
+else
+  echo "Binding de la política de IAM añadido exitosamente."
+fi
 
 sleep 20
 
@@ -98,11 +114,34 @@ gcloud projects add-iam-policy-binding $DEVSHELL_PROJECT_ID \
 
 sleep 20
 
+#Variables
+export $BUCKET_NAME=$DEVSHELL_PROJECT_ID-bucket
+export LOCATION=$REGION
 
+# Creación del bucket:
+# Crea el bucket con la ubicación especificada
+echo "Creando el bucket $DEVSHELL_PROJECT_ID-bucket en la ubicación $REGION..."
 gsutil mb -l $REGION gs://$DEVSHELL_PROJECT_ID-bucket
 
+if [ $? -ne 0 ]; then
+  echo "Hubo un error al crear el bucket $BUCKET_NAME."
+  exit 1
+else
+  echo "El bucket $BUCKET_NAME fue creado exitosamente en $LOCATION."
+fi
+
+# Crear el tema de Pub/Sub
+echo "Creando el tema de Pub/Sub $TOPIC_NAME..."
 gcloud pubsub topics create $TOPIC_NAME
 
+if [ $? -ne 0 ]; then
+  echo "Hubo un error al crear el tema de Pub/Sub $TOPIC_NAME."
+  exit 1
+else
+  echo "El tema de Pub/Sub $TOPIC_NAME fue creado exitosamente."
+fi
+
+#Creando Directorio quicklab
 mkdir quicklab
 cd quicklab
 
@@ -214,7 +253,8 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
 
 
 
-
+# Desplegar la Cloud Function
+echo "Desplegando la Cloud Function $FUNCTION_NAME..."
 # Your existing deployment command
 deploy_function() {
     gcloud functions deploy $FUNCTION_NAME \
@@ -228,15 +268,25 @@ deploy_function() {
     --quiet
 }
 
+if [ $? -ne 0 ]; then
+  echo "Hubo un error al desplegar la Cloud Function $FUNCTION_NAME."
+  exit 1
+else
+  echo "La Cloud Function $FUNCTION_NAME fue desplegada exitosamente."
+fi
+
 # Variables
 SERVICE_NAME="$FUNCTION_NAME"
 
+# Loop hasta que el servicio de Cloud Run esté creado
 # Loop until the Cloud Run service is created
 while true; do
   # Run the deployment command
+  # Ejecutar el comando de despliegue
   deploy_function
 
   # Check if Cloud Run service is created
+  # Verificar si el servicio de Cloud Run está creado
   if gcloud run services describe $SERVICE_NAME --region $REGION &> /dev/null; then
     echo "Cloud Run service is created. Exiting the loop."
     break
@@ -247,16 +297,25 @@ while true; do
   fi
 done
 
-
-
-
+# Descargar el archivo map.jpg usando curl
 curl -o map.jpg https://storage.googleapis.com/cloud-training/gsp315/map.jpg
 
+# Copiar map.jpg al bucket de Google Cloud Storage
 gsutil cp map.jpg gs://$DEVSHELL_PROJECT_ID-bucket/map.jpg
+
+# Remover el binding de la política de IAM
+echo "Removiendo el binding de la política de IAM para el usuario $USERNAME2..."
 
 gcloud projects remove-iam-policy-binding $DEVSHELL_PROJECT_ID \
 --member=user:$USERNAME2 \
 --role=roles/viewer
+
+if [ $? -ne 0 ]; then
+  echo "Hubo un error al remover el binding de la política de IAM."
+  exit 1
+else
+  echo "Binding de la política de IAM removido exitosamente."
+fi
 
 # Desactiva el modo de depuración si no es necesario para el resto del script
 set +x

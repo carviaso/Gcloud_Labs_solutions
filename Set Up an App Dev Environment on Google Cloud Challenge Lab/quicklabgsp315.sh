@@ -1,5 +1,62 @@
 
+# Habilita el modo de depuración
+set -x
 
+# Verifica si la variable DEVSHELL_PROJECT_ID está vacía
+if [ -z "$DEVSHELL_PROJECT_ID" ]; then
+  echo "El nombre del DEVSHELL_PROJECT_ID no puede estar vacío."
+  exit 1
+fi
+
+# Verifica si la variable TOPIC_NAME está vacía
+if [ -z "$TOPIC_NAME" ]; then
+  echo "El nombre del TOPIC_NAME no puede estar vacío."
+  exit 1
+fi
+
+# Verifica si la variable PROJECT_NUMBER está vacía
+if [ -z "$PROJECT_NUMBER" ]; then
+  echo "El nombre del PROJECT_NUMBER no puede estar vacío."
+  exit 1
+fi
+
+# Verifica si la variable REGION está vacía
+if [ -z "$REGION" ]; then
+  echo "El nombre del REGION no puede estar vacío."
+  exit 1
+fi
+
+# Verifica si la variable FUNCTION_NAME está vacía
+if [ -z "$FUNCTION_NAME" ]; then
+  echo "El nombre del FUNCTION_NAME no puede estar vacío."
+  exit 1
+fi
+
+# Verifica si la variable PROJECT_ID está vacía
+if [ -z "$PROJECT_ID" ]; then
+  echo "El nombre del PROJECT_ID no puede estar vacío."
+  exit 1
+fi
+
+# Verifica si la variable BUCKET_SERVICE_ACCOUNT está vacía
+if [ -z "$BUCKET_SERVICE_ACCOUNT" ]; then
+  echo "El nombre del BUCKET_SERVICE_ACCOUNT no puede estar vacío."
+  exit 1
+fi
+
+# Verifica si la variable BUCKET_NAME está vacía
+if [ -z "$BUCKET_NAME" ]; then
+  echo "El nombre del BUCKET_NAME no puede estar vacío."
+  exit 1
+fi
+
+# Verifica si la variable USERNAME2 está vacía
+if [ -z "$USERNAME2" ]; then
+  echo "El nombre del USERNAME2 no puede estar vacío."
+  exit 1
+fi
+
+# ----------------------------------------------------------------
 
 export REGION="${ZONE%-*}"
 
@@ -201,3 +258,5 @@ gcloud projects remove-iam-policy-binding $DEVSHELL_PROJECT_ID \
 --member=user:$USERNAME2 \
 --role=roles/viewer
 
+# Desactiva el modo de depuración si no es necesario para el resto del script
+set +x

@@ -6,7 +6,7 @@ gcloud compute networks create nucleus-vpc --subnet-mode=auto
 gcloud compute instances create $INSTANCE_NAME \
           --network nucleus-vpc \
           --zone $ZONE  \
-          --machine-type e2-micro  \
+          --machine-type e2-medium  \
           --image-family debian-10  \
           --image-project debian-cloud 
 

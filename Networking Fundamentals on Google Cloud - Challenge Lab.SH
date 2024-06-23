@@ -1,6 +1,4 @@
 
-
-
 export REGION=
 
 export ZONE=

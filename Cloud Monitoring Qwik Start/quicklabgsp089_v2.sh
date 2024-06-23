@@ -1,4 +1,5 @@
 #!/bin/bash
+# Setup and requirements
 
 # Variables
 INSTANCE_NAME="lamp-1-vm"
@@ -16,11 +17,16 @@ NOTIFICATION_EMAIL="tu-email@example.com"
 DASHBOARD_NAME="Cloud Monitoring LAMP Qwik Start Dashboard"
 WIDGET_TITLE="CPU Load"
 WIDGET_TYPE="CPU load (1m)"
+DEVSHELL_PROJECT_ID=$(gcloud config get-value project)
 
 if [ -z "$DEVSHELL_PROJECT_ID" ]; then
   echo "El nombre del DEVSHELL_PROJECT_ID no puede estar vacío."
   exit 1
 fi
+# ===========================================
+# Task 1. Create a Compute Engine instance
+# ===========================================
+echo "Task 1. Create a Compute Engine instance"
 
 # Configuración de la zona y región
 echo "Configurando la región: $REGION y zona: $ZONE ..."
@@ -31,22 +37,28 @@ gcloud config set compute/zone $ZONE
 echo "=== Task 1. Create a Compute Engine instance ==="
 # Create the instance with the necessary metadata and tags
 echo "Creando la instancia de Compute Engine $INSTANCE_NAME..."
-
-gcloud compute instances create lamp-1-vm \
-    --project=$DEVSHELL_PROJECT_ID \
+gcloud compute instances create $INSTANCE_NAME \
     --zone=$ZONE \
-    --machine-type=e2-small \
-    --network-interface=network-tier=PREMIUM,stack-type=IPV4_ONLY,subnet=default \
-    --metadata=enable-oslogin=true \
-    --maintenance-policy=MIGRATE \
-    --provisioning-model=STANDARD \
-    --tags=http-server \
-    --create-disk=auto-delete=yes,boot=yes,device-name=lamp-1-vm,image=projects/debian-cloud/global/images/debian-10-buster-v20230629,mode=rw,size=10,type=projects/$DEVSHELL_PROJECT_ID/zones/$ZONE/diskTypes/pd-balanced \
-    --no-shielded-secure-boot \
-    --shielded-vtpm \
-    --shielded-integrity-monitoring \
-    --labels=goog-ec-src=vm_add-gcloud \
-    --reservation-affinity=any
+    --machine-type=$MACHINE_TYPE \
+    --image-family=$IMAGE_FAMILY \
+    --image-project=$IMAGE_PROJECT \
+    --tags=http-server
+
+#gcloud compute instances create lamp-1-vm \
+#    --project=$DEVSHELL_PROJECT_ID \
+#    --zone=$ZONE \
+#    --machine-type=e2-small \
+#    --network-interface=network-tier=PREMIUM,stack-type=IPV4_ONLY,subnet=default \
+#    --metadata=enable-oslogin=true \
+#    --maintenance-policy=MIGRATE \
+#    --provisioning-model=STANDARD \
+#    --tags=http-server \
+#    --create-disk=auto-delete=yes,boot=yes,device-name=lamp-1-vm,image=projects/debian-cloud/global/images/debian-10-buster-v20230629,mode=rw,size=10,type=projects/$DEVSHELL_PROJECT_ID/zones/$ZONE/diskTypes/pd-balanced \
+#    --no-shielded-secure-boot \
+#    --shielded-vtpm \
+#    --shielded-integrity-monitoring \
+#    --labels=goog-ec-src=vm_add-gcloud \
+#    --reservation-affinity=any
 
 # Verificar si la instancia se creó correctamente
 if [ $? -eq 0 ]; then
@@ -75,10 +87,10 @@ echo "✨ Todas las tareas han sido completadas exitosamente."
 # Task 2. Add Apache2 HTTP Server to your instance
 echo "=== Task 2. Add Apache2 HTTP Server to your instance ==="
 # Generate SSH keys
-gcloud compute config-ssh --project "$DEVSHELL_PROJECT_ID" --quiet
+#gcloud compute config-ssh --project "$DEVSHELL_PROJECT_ID" --quiet
 
 # SSH into the instance and run commands
-gcloud compute ssh lamp-1-vm --project "$DEVSHELL_PROJECT_ID" --zone $ZONE --command "sudo apt-get update && sudo apt-get install -y apache2 php7.0 && sudo service apache2 restart"
+gcloud compute ssh $INSTANCE_NAME --project "$DEVSHELL_PROJECT_ID" --zone $ZONE --command "sudo apt-get update && sudo apt-get install -y apache2 php7.0 && sudo service apache2 restart"
 
 echo "✨ Todas las tareas han sido completadas exitosamente."
 
@@ -99,7 +111,6 @@ else
 fi
 
 echo "✨ Todas las tareas han sido completadas exitosamente."
-
 
 # Función para verificar el estado de la ejecución de una tarea
 check_status() {
@@ -127,11 +138,15 @@ check_status
 # Instalar los agentes de monitoreo y registro en la instancia
 echo "Instalando los agentes de monitoreo y registro en la instancia $INSTANCE_NAME..."
 gcloud compute ssh $INSTANCE_NAME --zone $ZONE --command '
-curl -sSO https://dl.google.com/cloudagents/add-monitoring-agent-repo.sh && sudo bash add-monitoring-agent-repo.sh &&
-sudo apt-get update && sudo apt-get install -y stackdriver-agent &&
-curl -sSO https://dl.google.com/cloudagents/add-logging-agent-repo.sh && sudo bash add-logging-agent-repo.sh &&
+curl -sSO https://dl.google.com/cloudagents/add-monitoring-agent-repo.sh && \
+sudo bash add-monitoring-agent-repo.sh && \
+sudo apt-get update && sudo apt-get install -y stackdriver-agent && \
+curl -sSO https://dl.google.com/cloudagents/add-logging-agent-repo.sh && sudo bash add-logging-agent-repo.sh &&\
 sudo apt-get update && sudo apt-get install -y google-fluentd && sudo service google-fluentd start'
 check_status
+
+# Task 3. Create an uptime check
+echo "Task 3. Create an uptime check"
 
 # Crear una verificación de tiempo de actividad (uptime check)
 echo "Creando una verificación de tiempo de actividad para la instancia $INSTANCE_NAME..."
@@ -139,7 +154,7 @@ INSTANCE_IP=$(gcloud compute instances describe $INSTANCE_NAME --zone $ZONE --fo
 gcloud monitoring uptime-checks create http $INSTANCE_NAME-uptime-check \
     --host=$INSTANCE_IP \
     --path="/" \
-    --display-name="$INSTANCE_NAME Uptime Check" \
+    --display-name="Lamp Uptime Check" \
     --http-check=port=80 \
     --timeout=10s \
     --check-interval=1m

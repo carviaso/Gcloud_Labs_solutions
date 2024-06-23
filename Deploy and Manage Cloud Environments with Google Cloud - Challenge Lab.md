@@ -1,44 +1,44 @@
-
+# Deploy and Manage Cloud Environments with Google Cloud - Challenge Lab
 
 In the terminal in the new browser window, install the pglogical database extension:
-
+```
 sudo apt install postgresql-13-pglogical
-
+```
 
 Download and apply some additions to the PostgreSQL configuration files (to enable pglogical extension) and restart the postgresql service:
 
 
-
+```
 sudo su - postgres -c "gsutil cp gs://cloud-training/gsp918/pg_hba_append.conf ."
 sudo su - postgres -c "gsutil cp gs://cloud-training/gsp918/postgresql_append.conf ."
 sudo su - postgres -c "cat pg_hba_append.conf >> /etc/postgresql/13/main/pg_hba.conf"
 sudo su - postgres -c "cat postgresql_append.conf >> /etc/postgresql/13/main/postgresql.conf"
 sudo systemctl restart postgresql@13-main
-
+```
 
 3 Launch the psql tool:
-
+```
 
 
 
 sudo su - postgres
 psql
-
+```
 
 
 4Add the pglogical database extension to the postgres, orders and gmemegen_db databases.
 
-
+```
 \c postgres;
 CREATE EXTENSION pglogical;
 \c orders;
 CREATE EXTENSION pglogical;
 \c gmemegen_db;
 CREATE EXTENSION pglogical;
-
+```
 
 5 List the PostgreSQL databases on the server:
-
+```
 \l
 
 —--------------------------------------------------------
@@ -138,7 +138,7 @@ exit
 
 —--------------------------------------------------------
 —--------------------------------------------------------
-
+```
 
 
 Create a new continuous Database Migration Service job.

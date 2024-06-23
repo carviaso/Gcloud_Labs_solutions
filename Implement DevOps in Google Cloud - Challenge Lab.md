@@ -1,15 +1,15 @@
+# Implement DevOps in Google Cloud - Challenge Lab
 
 
-
-
+```
 export PROJECT_ID=
 export CLUSTER_NAME=
 export ZONE=
 export REGION=
 export REPO=
+```
 
-
-
+```
 gcloud services enable container.googleapis.com \
     cloudbuild.googleapis.com \
     sourcerepo.googleapis.com
@@ -105,13 +105,13 @@ git push -u origin master
 git branch dev
 git checkout dev
 git push -u origin dev
+```
 
 
 
+# TASK 3
 
-#TASK 3
-
-
+```
 gcloud builds triggers create cloud-source-repositories \
     --name="sample-app-prod-deploy" \
     --description="Cloud Build Trigger for production deployment" \
@@ -127,13 +127,13 @@ gcloud builds triggers create cloud-source-repositories \
     --repo="sample-app" \
     --branch-pattern="^dev$" \
     --build-config="cloudbuild-dev.yaml"
+```
 
 
 
 
-
-#TASK 4:-
-
+# TASK 4:-
+```
 COMMIT_ID="$(git rev-parse --short=7 HEAD)"
 gcloud builds submit --tag="${REGION}-docker.pkg.dev/${PROJECT_ID}/$REPO/hello-cloudbuild:${COMMIT_ID}" .
 
@@ -181,10 +181,10 @@ git push -u origin master
 sleep 10
 
 kubectl expose deployment production-deployment -n prod --name=prod-deployment-service --type=LoadBalancer --port 8080 --target-port 8080
+```
 
-
-#TASK 5:
-
+# TASK 5:
+```
 git checkout dev
 
 
@@ -290,7 +290,7 @@ kubectl -n $NAMESPACE rollout undo deployment/$DEPLOYMENT_NAME
 
 cd sample-app
 kubectl -n prod rollout undo deployment/production-deployment
-
+```
 
 
 

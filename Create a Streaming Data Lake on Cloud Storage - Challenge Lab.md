@@ -1,5 +1,5 @@
-
-
+# Create a Streaming Data Lake on Cloud Storage - Challenge Lab
+```
 PROJECT_ID=$(gcloud config get-value project)
 
 export BUCKET_NAME="${PROJECT_ID}-bucket"
@@ -42,7 +42,7 @@ mvn compile exec:java \
     --output=gs://$BUCKET_NAME/samples/output \
     --runner=DataflowRunner \
     --windowSize=2"
-
+```
 
 
 

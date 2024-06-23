@@ -5,6 +5,7 @@ Make sure you changing all the dates and count as per the task.
 ## Task 1. Total confirmed cases
 
 ```sql
+
 SELECT sum(cumulative_confirmed) as total_cases_worldwide
 FROM `bigquery-public-data.covid19_open_data.covid19_open_data`
 WHERE date='2020-05-25'

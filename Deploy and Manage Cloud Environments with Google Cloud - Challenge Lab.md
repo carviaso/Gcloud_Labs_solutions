@@ -28,12 +28,17 @@ psql
 
 4Add the pglogical database extension to the postgres, orders and gmemegen_db databases.
 
-```
+
 \c postgres;
+```sql
 CREATE EXTENSION pglogical;
+```
 \c orders;
+```sql
 CREATE EXTENSION pglogical;
+```
 \c gmemegen_db;
+```sql
 CREATE EXTENSION pglogical;
 ```
 
@@ -46,7 +51,7 @@ CREATE EXTENSION pglogical;
 
 
 Create the database migration user
-
+```sql
 
 CREATE USER migration_admin PASSWORD 'DMS_1s_cool!';
 ALTER DATABASE orders OWNER TO migration_admin;

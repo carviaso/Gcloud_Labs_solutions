@@ -1,6 +1,7 @@
-Build and Secure Networks in Google Cloud: Challenge Lab
+# Build and Secure Networks in Google Cloud: Challenge Lab
 
 
+```
 export IAP_NETWORK_TAG=
 
 export INTERNAL_NETWORK_TAG=
@@ -26,15 +27,15 @@ gcloud compute instances add-tags juice-shop --tags=$HTTP_NETWORK_TAG --zone=$ZO
 gcloud compute firewall-rules create internal-ssh-ingress --allow=tcp:22 --source-ranges 192.168.10.0/24 --target-tags $INTERNAL_NETWORK_TAG --network acme-vpc
  
 gcloud compute instances add-tags juice-shop --tags=$INTERNAL_NETWORK_TAG --zone=$ZONE
- 
+```
 
 
-Task 6 : SSH to bastion host via IAP and juice-shop via bastion
+## Task 6 : SSH to bastion host via IAP and juice-shop via bastion
 In Compute Engine -> VM Instances page, click the SSH button for the bastion host. Then SSH to juice-shop by
- 
+``` 
 gcloud compute ssh juice-shop --internal-ip
 
-
+```
 
 
 

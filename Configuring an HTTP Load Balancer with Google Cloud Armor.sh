@@ -36,6 +36,15 @@ gcloud compute instance-templates create us-central1-template \
 --shielded-integrity-monitoring \
 --reservation-affinity=any
 
+## nuevo version
+#gcloud beta compute instance-templates create us-central2-templat \
+#--project=qwiklabs-gcp-01-9cd9c50d4a3c --machine-type=e2-micro --network-interface=network=default,network-tier=PREMIUM --instance-template-region=us-central1 --metadata=startup-script-url=gs://cloud-training/gcpnet/httplb/startup.sh,enable-oslogin=true --maintenance-policy=MIGRATE --provisioning-model=STANDARD --service-account=965867442797-compute@developer.gserviceaccount.com --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/trace.append --create-disk=auto-delete=yes,boot=yes,device-name=us-central2-templat,image=projects/debian-cloud/global/images/debian-12-bookworm-v20240617,mode=rw,size=10,type=pd-balanced --no-shielded-secure-boot --shielded-vtpm --shielded-integrity-monitoring --reservation-affinity=any
+
+#gcloud beta compute instance-templates create instance-template-20240624-162703 --project=qwiklabs-gcp-01-9cd9c50d4a3c --machine-type=e2-medium --network-interface=subnet=default,no-address --instance-template-region=us-central1 --metadata=startup-script-url=gs://cloud-training/gcpnet/httplb/startup.sh,enable-oslogin=true --maintenance-policy=MIGRATE --provisioning-model=STANDARD --service-account=965867442797-compute@developer.gserviceaccount.com --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/trace.append --region=us-central1 --tags=allow-health-checks --create-disk=auto-delete=yes,boot=yes,device-name=instance-template-20240624-162703,image=projects/debian-cloud/global/images/debian-12-bookworm-v20240617,mode=rw,size=10,type=pd-balanced --no-shielded-secure-boot --shielded-vtpm --shielded-integrity-monitoring --reservation-affinity=any
+
+europe-west1-template
+*/
+
 ### europe-west1-template
 gcloud compute instance-templates create europe-west1-template \
 --project=$DEVSHELL_PROJECT_ID \
